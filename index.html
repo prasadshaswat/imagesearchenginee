@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Search Engine</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-family: sans-serif;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: blue;
+            color: white;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 100px auto 50px;
+            font-weight: 700;
+        }
+
+        form {
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            height: 90px;
+            background: #434989;
+            display: flex;
+            align-items: center;
+            border-radius: 40px;
+        }
+
+        form input {
+            flex: 1;
+            height: 100%;
+            border: 0;
+            outline: 0;
+            background: transparent;
+            color: wheat;
+            font-size: 22px;
+            padding: 0 30px;
+        }
+
+        form button {
+            padding: 0 40px;
+            height: 100%;
+            background-color: #ff3929;
+            color: white;
+            font-size: 22px;
+            border: 0;
+            outline: 0;
+            border-top-right-radius: 50px;
+            border-bottom-right-radius: 50px;
+            cursor: pointer;
+        }
+
+        ::placeholder {
+            color: white;
+            font-size: 21px;
+        }
+
+        .searchresult {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .searchresult img {
+            width: 25%;
+            margin: 10px;
+            box-sizing: border-box;
+        }
+
+        .show-morebtn {
+            background: #ff3929;
+            color: white;
+            border: 0;
+            outline: 0;
+            padding: 10px 20px;
+            border-radius: 40px;
+            margin: 10px auto 100px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Image Search Engine</h1>
+    <form id="Search-Form">
+        <input type="text" id="Search-box" placeholder="Enter the Image To search">
+        <button>Search</button>
+    </form>
+
+    <div class="searchresult"></div>
+    <button class="show-morebtn">SHOW MORE</button>
+    <script>
+        const API_KEY = `2HIBvNpn8VAQXz669ALRDB3JTwqlBVjLbrKYsY9NrfQ`;
+        const SearchForm = document.getElementById('Search-Form');
+        const SearchBox = document.getElementById('Search-box');
+        const ShowMoreBtn = document.querySelector('.show-morebtn');
+        const SearchResult = document.querySelector('.searchresult');
+        let keyword = '';
+        let page = 1;
+
+        async function getImages() {
+            keyword = SearchBox.value;
+            const url = `https://api.unsplash.com/search/photos?page=${page}&query=${keyword}&client_id=${API_KEY}`;
+
+            const response = await fetch(url);
+            const data = await response.json();
+           
+            data.results.forEach(image => {
+                const img = document.createElement('img');
+                img.src = image.urls.regular;
+                SearchResult.appendChild(img);
+            });
+
+            // If there are more images available, show the "Show More" button
+            if (data.total_pages > page) {
+                ShowMoreBtn.style.display = 'block';
+            } else {
+                ShowMoreBtn.style.display = 'none';
+            }
+        }
+
+        SearchForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            page = 1;
+            SearchResult.innerHTML = '';
+            getImages();
+        });
+
+        ShowMoreBtn.addEventListener('click', () => {
+            page++;
+            getImages();
+        });
+
+        getImages();
+    </script>
+</body>
+
+</html>
